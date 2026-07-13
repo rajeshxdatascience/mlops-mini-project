@@ -3,6 +3,7 @@ import pandas as pd
 import yaml
 import logging
 import os 
+import pickle
 
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -85,6 +86,8 @@ def apply_bow(train_data: pd.DataFrame,test_data: pd.DataFrame,max_features: int
 
         test_df = pd.DataFrame(X_test_bow.toarray())
         test_df["label"] = y_test
+
+        pickle.dump(vectorizer, open('models/vectorizer.pkl', 'wb'))
 
         logger.info("Bag of Words feature engineering completed successfully.")
 
