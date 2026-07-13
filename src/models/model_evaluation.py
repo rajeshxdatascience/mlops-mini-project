@@ -93,38 +93,114 @@ def save_metrics(metrics: dict, output_path: str) -> None:
     except Exception as e:
         logger.error(f"Error saving metrics: {e}")
         raise
-    
-def main() -> None:
-    mlflow.set_experiment("dvc-pipeline")
-    mlflow.start_run()
+
+def save_model_info(
+    run_id: str,
+    model_uri: str,
+    file_path: str
+) -> None:
+    """Save the MLflow run ID and actual model URI."""
+
     try:
-        X_test, y_test = load_data("./data/features/test_bow.csv")
+        model_info = {
+            "run_id": run_id,
+            "model_uri": model_uri
+        }
 
-        model = load_model("models/model.pkl")
+        with open(file_path, "w") as file:
+            json.dump(model_info, file, indent=4)
 
-        metrics = evaluate_model(
-            model,
-            X_test,
-            y_test
+        logger.info(
+            "Model info saved successfully to %s",
+            file_path
         )
 
-        save_metrics(metrics, "metrics.json")
-
-        logger.info("Model evaluation pipeline completed successfully.")
-
-        # Log metrics to MLflow
-        for metric_name, metric_value in metrics.items():
-            mlflow.log_metric(metric_name, metric_value)
-
-        # Log model parameters to mlflow
-        if hasattr(model, 'get_params'):
-            params = model.get_params()
-            for param_name , param_value in params.items():
-                mlflow.log_param(param_name, param_value)
-
     except Exception as e:
-        logger.error(f"Pipeline failed: {e}")
+        logger.error(
+            "Error while saving model info: %s",
+            e
+        )
         raise
+def main() -> None:
+
+    mlflow.set_experiment("dvc-pipeline")
+
+    with mlflow.start_run() as run:
+
+        try:
+            # Load test data
+            X_test, y_test = load_data(
+                "./data/features/test_bow.csv"
+            )
+
+            # Load trained model
+            model = load_model(
+                "models/model.pkl"
+            )
+
+            # Evaluate model
+            metrics = evaluate_model(
+                model,
+                X_test,
+                y_test
+            )
+
+            # Save metrics locally
+            save_metrics(
+                metrics,
+                "metrics.json"
+            )
+
+            # Log metrics to MLflow
+            for metric_name, metric_value in metrics.items():
+                mlflow.log_metric(
+                    metric_name,
+                    metric_value
+                )
+
+            # Log model parameters
+            if hasattr(model, "get_params"):
+                params = model.get_params()
+
+                for param_name, param_value in params.items():
+                    mlflow.log_param(
+                        param_name,
+                        param_value
+                    )
+
+            # Log model and capture actual model URI
+            logged_model = mlflow.sklearn.log_model(
+                sk_model=model,
+                name="model"
+            )
+
+            logger.info(
+                "Model logged to MLflow with URI: %s",
+                logged_model.model_uri
+            )
+
+            # Save model information
+            save_model_info(
+                run_id=run.info.run_id,
+                model_uri=logged_model.model_uri,
+                file_path="reports/experiment_info.json"
+            )
+
+            # Log metrics artifact
+            mlflow.log_artifact(
+                "metrics.json"
+            )
+
+            logger.info(
+                "Model evaluation pipeline completed successfully."
+            )
+
+        except Exception as e:
+            logger.error(
+                "Pipeline failed: %s",
+                e
+            )
+            raise
 
 
 if __name__ == "__main__":
