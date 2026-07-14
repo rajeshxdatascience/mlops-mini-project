@@ -186,10 +186,7 @@ def main() -> None:
                     )
 
             # Log model and capture actual model URI
-            logged_model = mlflow.sklearn.log_model(
-                sk_model=model,
-                name="model"
-            )
+            logged_model = mlflow.sklearn.log_model(sk_model=model,artifact_path="model")
 
             logger.info(
                 "Model logged to MLflow with URI: %s",
