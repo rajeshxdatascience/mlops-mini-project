@@ -19,15 +19,8 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run pipeline
+      - name: run pipeline
         env:
           DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
         run: |
-          if [ -z "$DAGSHUB_PAT" ]; then
-            echo "DAGSHUB_PAT is EMPTY"
-            exit 1
-          else
-            echo "DAGSHUB_PAT is SET"
-          fi
-
           dvc repro
