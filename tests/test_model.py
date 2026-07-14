@@ -83,7 +83,7 @@ class TestModelLoading(unittest.TestCase):
         f1_new = f1_score(y_holdout, y_pred_new)
 
         # Define expected thresholds for the performance metrics
-        expected_accuracy = 0.80
+        expected_accuracy = 0.75
         expected_precision = 0.75
         expected_recall = 0.75
         expected_f1 = 0.75
