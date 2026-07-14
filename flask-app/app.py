@@ -11,7 +11,7 @@ mlflow.set_tracking_uri("https://dagshub.com/rajeshxdatascience/mlops-mini-proje
 
 # load model from registry
 model_name = 'my_model'
-model_version = 3
+model_version = 6
 
 model_uri = f"models:/{model_name}/{model_version}"
 model = mlflow.pyfunc.load_model(model_uri)
