@@ -108,27 +108,33 @@ def home():
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
-
     text = request.form['text']
 
-    # clean
+    # Clean text
     text = normalize_text(text)
 
-    # bow
+    # Vectorize
     features = vectorizer.transform([text])
 
-    # Convert sparse matrix to DataFrame
-    features_df = pd.DataFrame.sparse.from_spmatrix(features)
-    features_df = pd.DataFrame(features.toarray(), columns=[str(i) for i in range(features.shape[1])])
+    # Convert to DataFrame
+    features_df = pd.DataFrame(
+        features.toarray(),
+        columns=[str(i) for i in range(features.shape[1])]
+    )
 
-   # Prediction
-    prediction = model.predict(features_df)[0]
+    # Prediction
+    result = model.predict(features_df)
 
-    # Convert numeric prediction to readable label
-    result = "Happy" if prediction == 1 else "Sad"
+    # Convert numeric output to readable sentiment
+    prediction = "Happy" if int(result[0]) == 1 else "Sad"
 
-    return render_template('index.html', result=result)
+    # Render prediction in HTML
+    return render_template(
+        'index.html',
+        result=prediction
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

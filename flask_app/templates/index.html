@@ -7,11 +7,15 @@
 
     <body>
         <h1>Sentiment Analysis</h1>
+
         <form action="/predict" method="POST">
             <label>Write text:</label><br>
             <textarea name="text"></textarea><br>
             <input type="submit" value="Predict">
         </form>
-    </body>
 
+        {% if result %}
+            <h2>Prediction: {{ result }}</h2>
+        {% endif %}
+    </body>
 </html>
