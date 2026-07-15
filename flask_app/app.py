@@ -122,11 +122,13 @@ def predict():
     features_df = pd.DataFrame.sparse.from_spmatrix(features)
     features_df = pd.DataFrame(features.toarray(), columns=[str(i) for i in range(features.shape[1])])
 
-    # prediction
-    result = model.predict(features_df)
+   # Prediction
+    prediction = model.predict(features_df)[0]
 
-    # show
-    return render_template('index.html', result=result[0])
+    # Convert numeric prediction to readable label
+    result = "Happy" if prediction == 1 else "Sad"
+
+    return render_template('index.html', result=result)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
