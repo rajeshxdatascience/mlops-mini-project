@@ -1,18 +1,15 @@
 from flask import Flask, render_template,request
 import mlflow
-import dagshub
 import os
 import pickle
 import pandas as pd
-
 import numpy as np
-import pandas as pd
-import os
 import re
 import nltk
 import string
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+
 
 def lemmatization(text):
     """Lemmatize the text."""
