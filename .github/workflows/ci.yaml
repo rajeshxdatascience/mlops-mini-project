@@ -79,6 +79,8 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/emotion2:v2.1
             docker stop my-app || true
             docker rm my-app || true
-            docker run -p 80:5000 --name my-app \
-              -e DAGSHUB_PAT:${{ secrets.DAGSHUB_PAT }} \
-              ${{ secrets.DOCKER_HUB_USERNAME }}/emotion2:v2.1
+             docker run -d \
+            --name my-app \
+            -p 80:5000 \
+            -e DAGSHUB_PAT="${{ secrets.DAGSHUB_PAT }}" \
+            ${{ secrets.DOCKER_HUB_USERNAME }}/emotion2:v2.1
